@@ -1,0 +1,4 @@
+#!/bin/bash
+source /sto2/ssd/allouche/MySoftwares/NNMP-STM-12-Code/env.sh
+tensorboard --logdir trainingDir/logs/
+

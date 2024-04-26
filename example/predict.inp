@@ -1,0 +1,6 @@
+--input_file_name=POSCAR
+--output_file_name=POSCAR.png
+--distance=10
+--emin=-5
+--emax=10
+--list_models=train_dir

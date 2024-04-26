@@ -1,0 +1,154 @@
+#!/bin/bash
+###################################################################
+#                                                                 #
+#  Run NNMP-STM in batch at RAPTOR                                #
+#  Auteur:  A-R Allouche allouchear@univ-lyon1.fr                 #
+#  iLM, Villeurbanne                                              #
+#  May 2022                                                       #
+#                                                                 #
+###################################################################
+
+ngpus=$1 ; [ 0 = $# ] || shift
+configfile=$1 ; [ 0 = $# ] || shift
+ttime=$1 ; [ 0 = $# ] || shift
+type=$1 ; [ 0 = $# ] || shift
+
+dirname=/sps/ilm/allouche/MySoftwares/NNMP-STM-12-Code
+
+filename="$dirname/train.py"
+if [ -z "$type" ]
+then
+filename="$dirname/train.py"
+else
+filename="$dirname/${type}.py"
+fi
+
+if [ -z "$filename" ]  || [ -z "$ngpus" ] || [ -z "$configfile" ]
+then
+   clear
+   echo " " 
+   echo "=============================================================="
+   echo " $0 Queue #ngpus inputfile.txt"
+   echo " Pour toutes questions contacter : "
+   echo " A.R. Allouche allouchear@univ-lyon1.fr"
+   echo "=============================================================="
+   echo "-------------------------------------------"
+   echo "Vous devez fournir :"
+   echo " - Le nombre de gpus"
+   echo " - Le nom du fichier d'entree"
+   echo " - optionnally the time (defaut 0-16:00)"
+   echo " - optionnally the type (defaut train)"
+   echo " - if type is given, time is rquired"
+   echo "-------------------------------------------"
+   echo "Exemples:"
+   echo "       $0  1 train.inp "
+   echo "       $0  1 train.inp 0-16:00"
+   echo "       $0  1 traini.inp 0-16:00 train"
+   echo "       $0  1 evaluation.inp 0-16:00 evaluation"
+   echo "       $0  1 predict.inp 0-16:00 predict"
+   echo "==========================================="
+   echo " " 
+   exit 1
+
+fi
+
+if [ -z "$ttime" ] 
+then
+ttime=0-16:00
+fi
+
+echo "-------------------------------------------------------"
+echo "python code file $filename"
+echo "-------------------------------------------------------"
+
+nthreads=4
+
+filepy=$filename
+fn=${configfile%.txt}
+filename=${fn%.inp}
+
+
+DEFAULTDIR=`pwd`
+if test ! -s "$filepy"
+then
+   echo " " 
+   echo "============================================"
+   echo "le fichier $filepy est introuvable(ou vide)"
+   echo "============================================"
+   echo " " 
+   exit 2
+fi
+if test ! -s "$configfile"
+then
+   echo " " 
+   echo "==============================================="
+   echo "le fichier $configfile est introuvable(ou vide)"
+   echo "==============================================="
+   echo " " 
+   exit 2
+fi
+
+
+mod_inp=mod_${filename}.inp
+
+endof=EOF
+cat > $filename.sh <<EOF
+#!/bin/bash
+
+cd $DEFAULTDIR
+source $HOME/.bashrc
+
+grep -v num_jobs $configfile > $mod_inp
+echo "--num_jobs=1" >> $mod_inp
+
+source /sps/ilm/allouche/MySoftwares/NNMP-STM-12-Code/env.sh
+time python -u $filepy $mod_inp > $filename.out
+/bin/rm $filename.sh
+/bin/rm $mod_inp
+EOF
+
+if [ -z "$jobname" ] 
+then
+jobname=$filename
+fi
+jname=j$jobname
+
+if [ ${#jname}  -gt 7 ]
+then
+jname=`echo j${jobname:(-7)}`
+fi
+
+chmod u+x $filename.sh
+
+mmem=$(( 20*ngpus ))
+mmem=${mmem}G
+echo "time=$ttime"
+echo "mem=$mmem"
+
+res=`sbatch --job-name=$jname --mem=$mmem --output=$DEFAULTDIR/$filename.sout --error=$DEFAULTDIR/$filename.serr --gres=gpu:v100:$ngpus -t $ttime $filename.sh`
+#echo "res=$res"
+rr=0
+rr=`expr match "$res" '.*has been submitted*.'`
+
+#echo $rr
+
+if [[ $rr -eq 0 ]]
+then
+echo " "
+echo "==================================================================="
+echo " "
+echo "Un fichier $filename.sh a ete cree pour lancer le calcul"
+echo "Ne pas effacer ce fichier avant la fin du calcul"
+echo " "
+echo "-------------------------------------------------------------------"
+echo " "
+echo "pour avoir des informations sur vos job taper : squeue "
+echo " "
+echo "pour detruire un job taper : scancel numjob"
+echo " "
+echo "==================================================================="
+echo " "
+else
+echo $res
+fi
+

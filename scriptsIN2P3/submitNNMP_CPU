@@ -1,0 +1,138 @@
+#!/bin/bash
+###################################################################
+#                                                                 #
+#  Run NNMP in batch / IN2P3 / CPU                                #
+#  Auteur:  A-R Allouche allouchear@univ-lyon1.fr                 #
+#  iLM, Villeurbanne                                              #
+#  May 2024                                                       #
+#                                                                 #
+###################################################################
+
+queue=$1 ; [ 0 = $# ] || shift
+nproc=$1 ; [ 0 = $# ] || shift
+configfile=$1 ; [ 0 = $# ] || shift
+type=$1 ; [ 0 = $# ] || shift
+
+
+dirname=/sps/ilm/allouche/MySoftwares/NNMP-STM-12-Code
+
+filename="$dirname/train.py"
+if [ -z "$type" ]
+then
+filename="$dirname/train.py"
+else
+filename="$dirname/${type}.py"
+fi
+
+if [ -z "$configfile" ]  || [ -z "$nproc" ] || [ -z "$queue" ]
+then
+   clear
+   echo " " 
+   echo "==========================================="
+   echo "                 $0 "
+   echo "==========================================="
+   echo "     Queue         Duree    # proc    Memoire"
+   echo "     =========     =====    ======    ========"
+   echo "     medium        5h       64 max    3Go/core"
+   echo "     long         30h       64 max    3Go/core"
+   echo "     longlasting 168h       64 max    3Go/core"
+   echo "------------------------------------------------"
+   echo "Required :"
+   echo " - queue name "
+   echo " - number of cores"
+   echo " - input file"
+   echo " - optionnally the type (defaut train)"
+   echo "-------------------------------------------"
+   echo "Exemples:"
+   echo "       $0 medium 8 train.inp "
+   echo "       $0 medium 8 train train "
+   echo "       $0 medium 8 evaluation evaluation "
+   echo "       $0 medium 8 predict predict "
+   echo "==========================================="
+   echo " " 
+   exit 1
+fi
+
+echo "-------------------------------------------------------"
+echo "python code file $filename"
+echo "-------------------------------------------------------"
+
+nthreads=$nproc
+
+filepy=$filename
+fn=${configfile%.txt}
+filename=${fn%.inp}
+
+
+DEFAULTDIR=`pwd`
+if test ! -s "$filepy"
+then
+   echo " " 
+   echo "============================================"
+   echo "le fichier $filepy est introuvable(ou vide)"
+   echo "============================================"
+   echo " " 
+   exit 2
+fi
+if test ! -s "$configfile"
+then
+   echo " " 
+   echo "==============================================="
+   echo "le fichier $configfile est introuvable(ou vide)"
+   echo "==============================================="
+   echo " " 
+   exit 2
+fi
+
+
+mod_inp=mod_${filename}.inp
+
+endof=EOF
+cat > $filename.sh <<EOF
+#!/bin/bash
+
+cd $DEFAULTDIR
+source $HOME/.bashrc
+
+grep -v num_jobs $configfile > $mod_inp
+echo "--num_jobs=$nproc" >> $mod_inp
+
+source /sps/ilm/allouche/MySoftwares/NNMP-STM-12-Code/env.sh
+export CUDA_VISIBLE_DEVICES='' # to force CPU use
+time python -u $filepy $mod_inp > $filename.out
+/bin/rm $filename.sh
+/bin/rm $mod_inp
+EOF
+
+[ $queue = "medium" ] && ttime=5:0:0 
+[ $queue = "long" ] &&  ttime=30:0:0 
+[ $queue = "longlasting" ] && ttime=168:0:0
+mmem=$(( 3000*nproc ))
+res=`sbatch --time=$ttime --mem=$mmem --output=$DEFAULTDIR/$filename.sout --error=$DEFAULTDIR/$filename.serr --nodes=1 --tasks=$nproc  $filename.sh`
+
+#echo "res=$res"
+rr=0
+rr=`expr match "$res" '.*has been submitted*.'`
+
+#echo $rr
+
+if [[ $rr -eq 0 ]]
+then
+echo " "
+echo "==================================================================="
+echo " "
+echo "Un fichier $filename.sh a ete cree pour lancer le calcul"
+echo "Ne pas effacer ce fichier avant la fin du calcul"
+echo " "
+echo "-------------------------------------------------------------------"
+echo " "
+echo "pour avoir des informations sur vos job taper : squeue "
+echo " "
+echo "pour detruire un job taper : scancel numjob"
+echo " "
+echo "==================================================================="
+echo " "
+else
+echo $res
+fi
+

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+sdir=${PWD%/*}
+#sourcedir=/sps/ilm/allouche/MySoftwares/NNMP-STM-10-Code
+sourcedir=$sdir
+
+listscripts=(xbuildData xevaluationEnsemble xpredict xtrain runTensorboard submitNNMP_CPU submitNNMP_GPU env.sh)
+
+for s in ${listscripts[@]}
+do
+echo $s
+tmp=${s}_tmp
+awk -v sourcedir=$sourcedir '{
+	if ( ($0 ~/source/) && ($0 ~ /NNMP-STM/) && ($0 ~ /env.sh/) )
+		printf("source %s/env.sh\n",sourcedir)
+	else
+	{
+		if ( ($0 ~/dirname/) && ($0 ~ /NNMP-STM/))
+			printf("dirname=%s\n",sourcedir)
+		else
+		{
+			if ( ($0 ~/export NNMP_STM_CODEDIR=/))
+				printf("export NNMP_STM_CODEDIR=%s\n",sourcedir)
+			else
+				printf("%s\n",$0)
+		}
+	}
+
+}' $s > $tmp
+mv $tmp $s
+chmod u+x $s
+done
+cp env.sh ../.

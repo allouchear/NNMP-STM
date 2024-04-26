@@ -1,0 +1,1 @@
+nohup ./xtrain 2> xtrain.err > xtrain.out &

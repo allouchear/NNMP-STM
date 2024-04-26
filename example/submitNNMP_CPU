@@ -1,0 +1,159 @@
+#!/bin/bash
+###################################################################
+#                                                                 #
+#  Run NNMP-STM in batch at RAPTOR                                   #
+#  Auteur:  A-R Allouche allouchear@univ-lyon1.fr                 #
+#  iLM, Villeurbanne                                              #
+#  May 2022                                                       #
+#                                                                 #
+###################################################################
+
+queue=$1 ; [ 0 = $# ] || shift
+nproc=$1 ; [ 0 = $# ] || shift
+configfile=$1 ; [ 0 = $# ] || shift
+
+dirname=/sto2/ssd/allouche/MySoftwares/NNMP-STM-12-Code
+
+filename="$dirname/train.py"
+if [ -z "$type" ]
+then
+filename="$dirname/train.py"
+else
+filename="$dirname/${type}.py"
+fi
+
+if [ -z "$filename" ]  || [ -z "$nproc" ] || [ -z "$queue" ] || [ -z "$configfile" ]
+then
+   clear
+   echo " " 
+   echo "=============================================================="
+   echo " $0 Queue queue #procs inputfile.inp"
+   echo " A.R. Allouche allouchear@univ-lyon1.fr"
+   echo "=============================================================="
+   echo "     Queue  	# proc max"
+   echo "     ======   	=========="
+   echo "     tc1 	40"
+   echo "     tc2 	40"
+   echo "     tc3       96"
+   echo "     tc4       80"
+   echo "     tc5      128"
+   echo "     a22      96"
+   echo "     p22      128"
+   echo "     f22      112"
+   echo "-------------------------------------------"
+   echo "Required :"
+   echo " - queue name "
+   echo " - number of cores"
+   echo " - input file"
+   echo " - optionnally the type (defaut train)"
+   echo "-------------------------------------------"
+   echo "Exemple:"
+   echo "       $0 p22 8 test.inp "
+   echo "       $0 p22 8 test.inp "
+   echo "       $0 p22 8 test.inp train "
+   echo "       $0 p22 8 evaluation.inp evaluation "
+   echo "       $0 p22 8 predict.inp predict "
+   echo "==========================================="
+   echo " " 
+   echo " " 
+   exit 1
+fi
+n=`squeue -u "$LOGNAME" | grep -c "$LOGNAME"`
+if [ $n -gt "500" ]
+then
+echo "==================================================================="
+echo "vous avez depasse votre quota"
+echo "vous n'avez le droit qu'a 20 jobs maximum"
+echo "==================================================================="
+exit 1
+fi
+
+
+nthreads=$nproc
+
+filepy=$filename
+fn=${configfile%.txt}
+filename=${fn%.inp}
+mod_inp=mod_${filename}.inp
+
+
+DEFAULTDIR=`pwd`
+if test ! -s "$filepy"
+then
+   echo " " 
+   echo "============================================"
+   echo "le fichier $filepy est introuvable(ou vide)"
+   echo "============================================"
+   echo " " 
+   exit 2
+fi
+if test ! -s "$configfile"
+then
+   echo " " 
+   echo "==============================================="
+   echo "le fichier $configfile est introuvable(ou vide)"
+   echo "==============================================="
+   echo " " 
+   exit 2
+fi
+
+
+cat > $filename.sh <<EOF
+#!/bin/bash
+
+cd $DEFAULTDIR
+source $HOME/.bashrc
+
+grep -v num_jobs $configfile > $mod_inp
+echo "--num_jobs=$nproc" >> $mod_inp
+
+source /sto2/ssd/allouche/MySoftwares/NNMP-STM-12-Code/env.sh
+export CUDA_VISIBLE_DEVICES='' # to force CPU use
+time python -u $filepy $mod_inp > $filename.out
+/bin/rm $filename.sh
+/bin/rm $mod_inp
+EOF
+
+
+grb=$queue && [ $queue = "tc1" ] && grb="theochem" 
+[ $queue = "tc2" ] && grb="theochem" 
+[ $queue = "tc3" ] && grb="theochem" 
+[ $grb = "new" ] && grb="lynx_all" 
+[ $grb = "ibm" ] && grb="lynx_all" 
+
+qn="-p $queue"
+if [[  "$queue" == *"node"* ]]
+then
+q=$(/opt/slurm22/bin/sinfo  -Nel | grep "$queue" | awk '{printf("%s\n",$3)}')
+qn="-p $q --nodelist=$queue" 
+fi
+#echo $qn
+
+res=`sbatch -A $grb --output=$DEFAULTDIR/$filename.sout --error=$DEFAULTDIR/$filename.serr $qn --nodes=1 -n $nthreads $filename.sh`
+
+#echo "res=$res"
+rr=0
+rr=`expr match "$res" '.*has been submitted*.'`
+
+#echo $rr
+
+if [[ $rr -eq 0 ]]
+then
+echo " "
+echo "==================================================================="
+echo " "
+echo "Un fichier $filename.sh a ete cree pour lancer le calcul"
+echo "Ne pas effacer ce fichier avant la fin du calcul"
+echo " "
+echo "-------------------------------------------------------------------"
+echo " "
+echo "pour avoir des informations sur vos job taper : squeue "
+echo " "
+echo "pour detruire un job taper : scancel numjob"
+echo " "
+echo "==================================================================="
+echo " "
+else
+echo $res
+fi
+

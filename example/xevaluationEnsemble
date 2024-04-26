@@ -1,0 +1,7 @@
+#!/bin/bash 
+
+source /sto2/ssd/allouche/MySoftwares/NNMP-STM-12-Code/env.sh
+
+export CUDA_VISIBLE_DEVICES=''
+
+python $NNMP_STM_CODEDIR/evaluation.py evaluation.inp

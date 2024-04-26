@@ -1,0 +1,2 @@
+cutoff,num_pixels,prefix,negative,dtype
+10.0,100000,sys_,1,float32

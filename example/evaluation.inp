@@ -1,0 +1,4 @@
+--metrics_dir=metrics_evaluation
+--data_dir=Data/databaseNegative32
+--list_models=train_dir
+--sys_ID_file=train_dir/metrics/index_train.csv

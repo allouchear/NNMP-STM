@@ -1,0 +1,26 @@
+#!/bin/bash
+
+sdir=${PWD}
+sourcedir=$sdir
+
+listfiles=(train.inp train_ms_ssim.inp)
+
+for s in ${listfiles[@]}
+do
+echo $s $sourcedir
+tmp=${s}_tmp
+awk -v sourcedir=$sourcedir '{
+	if ( ($0 ~/\-\-restart/) && ($0 ~ /NNMP-STM/))
+		printf("--restart=%s/train_dir\n",sourcedir)
+	else
+	{
+		if ( ($0 ~/--dataset/) && ($0 ~ /NNMP-STM/))
+			printf("--dataset=%s/Data/databaseNegative32\n",sourcedir)
+		else
+			printf("%s\n",$0)
+	}
+
+
+}' $s > $tmp
+mv $tmp $s
+done
