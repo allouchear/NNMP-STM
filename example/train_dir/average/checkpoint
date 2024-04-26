@@ -1,2 +1,0 @@
-model_checkpoint_path: "average.ckpt"
-all_model_checkpoint_paths: "average.ckpt"
