@@ -75,15 +75,13 @@ def getData(args):
 	#print(df)
 	#print(df['struct'][0])
 	#print(df['PNG'][0])
-	if(args.seed>=0):
+	seed = args.seed if args.seed>=0 else None
+	if(args.p<=100):
 		print("Shuffle data")
-		df = df.sample(frac = 1,replace=True,random_state=args.seed)
-		df.reset_index(drop=True, inplace=True)
-	if(args.p<100):
-		ls=int(df.shape[0]*args.p/100)
-		#print("ls = ",ls)
-		df = df[:ls]
-		df.reset_index(drop=True, inplace=True)
+		df = df.sample(frac = args.p/100, replace = False, random_state = seed)
+		df.reset_index(drop = True, inplace=True)
+		# print the shuffled dataframe to easily find problematic structures if any
+		df.to_csv(args.outdir + os.sep + "data_train.csv", index=True)
 		#print(df)
 		#print("Number of selected data = ",df.shape[0])
 
@@ -264,8 +262,9 @@ def buildAllData(directory, df, conv_distance, conv_mass, cutoff, njobs=1, prefi
 	return fnames
 
 
-def getdirname(args):
-	directory=args.outdir
+def getdirname(args ) :
+def # print the shuffled dataframe to easily find problematic structures if any
+def directory=args.outdir
 	if not os.path.exists(directory):
 		os.makedirs(directory)
 	return directory
