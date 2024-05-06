@@ -77,8 +77,8 @@ class STMModelNet(tf.keras.Model):
 	def computeLoss(self, data):
 		with tf.GradientTape() as tape:
 			images, nhloss = self.computeProperties(data)
-			nx=data['image_nx'][0]
-			ny=data['image_ny'][0]
+			nx=data['image_nx']
+			ny=data['image_ny']
 			loss = stm_loss(images, tf.constant(data['images'],dtype=self.dtype), nx, ny, loss_bypixel=self.loss_bypixel, loss_type=self.loss_type)
 			#loss /= tf.reshape(images,[-1]).shape[0] DEBUG
 			#print("lossDiv=",loss)
