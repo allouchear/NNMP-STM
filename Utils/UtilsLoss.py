@@ -136,25 +136,43 @@ def stm_sis(model_stm ,target_stm,threshold=THRFREQ):
 	return sis
 
 def stm_ssim_all(model_stm ,target_stm, nx, ny):
-	if len( model_stm.shape)==1:
+	if len(model_stm.shape)==1:
 		 model_stm = tf.reshape(model_stm,[1,-1])
 		 target_stm = tf.reshape(target_stm,[1,-1])
-	nan_mask=tf.math.logical_or(tf.math.is_nan(target_stm) , tf.math.is_nan(model_stm))
+	ssim= []
 	n = target_stm.shape[0]
-	target_stm = tf.reshape(target_stm[~nan_mask],[n,-1])
-	model_stm = model_stm[:,0:target_stm.shape[1]]
-	ssim= stm_ssim(model_stm ,target_stm, nx, ny)
-	ssim = tf.reshape(ssim,[ssim.shape[0],-1])
-	ssim=tf.reduce_mean(ssim,axis=1) # by pixels
+	for i in range(n):
+		target_stmi = target_stm[i]
+		model_stmi = model_stm[i]
+		nan_mask=tf.math.logical_or(tf.math.is_nan(target_stmi) , tf.math.is_nan(model_stmi))
+		target_stmi = target_stmi[~nan_mask]
+		m = target_stmi.shape[0]
+		model_stmi = model_stmi[0:m]
+		target_stmi = tf.reshape(target_stmi,[1,-1])
+		model_stmi = tf.reshape(model_stmi,[1,-1])
+		ssimi=stm_ssim(model_stmi ,target_stmi, nx[i], ny[i])
+		ssimi=tf.reduce_mean(ssimi)
+		ssim.append(ssimi)
+	ssim=tf.Variable(ssim,dtype=model_stm.dtype)
 	return ssim
 
 def stm_ms_ssim_all(model_stm ,target_stm, nx, ny):
 	if len( model_stm.shape)==1:
 		 model_stm = tf.reshape(model_stm,[1,-1])
 		 target_stm = tf.reshape(target_stm,[1,-1])
-	nan_mask=tf.math.logical_or(tf.math.is_nan(target_stm) , tf.math.is_nan(model_stm))
+	ms_ssim= []
 	n = target_stm.shape[0]
-	target_stm = tf.reshape(target_stm[~nan_mask],[n,-1])
-	model_stm = model_stm[:,0:target_stm.shape[1]]
-	ms_ssim= stm_ms_ssim(model_stm ,target_stm, nx, ny)
+	for i in range(n):
+		target_stmi = target_stm[i]
+		model_stmi = model_stm[i]
+		nan_mask=tf.math.logical_or(tf.math.is_nan(target_stmi) , tf.math.is_nan(model_stmi))
+		target_stmi = target_stmi[~nan_mask]
+		m = target_stmi.shape[0]
+		model_stmi = model_stmi[0:m]
+		target_stmi = tf.reshape(target_stmi,[1,-1])
+		model_stmi = tf.reshape(model_stmi,[1,-1])
+		ms_ssimi=stm_ms_ssim(model_stmi ,target_stmi, nx[i], ny[i])
+		ms_ssimi=tf.reduce_mean(ms_ssimi)
+		ms_ssim.append(ms_ssimi)
+	ms_ssim=tf.Variable(ms_ssim,dtype=model_stm.dtype)
 	return ms_ssim

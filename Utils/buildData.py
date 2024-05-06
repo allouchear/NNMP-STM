@@ -76,14 +76,17 @@ def getData(args):
 	#print(df['struct'][0])
 	#print(df['PNG'][0])
 	seed = args.seed if args.seed>=0 else None
-	if(args.p<=100):
-		print("Shuffle data")
-		df = df.sample(frac = args.p/100, replace = False, random_state = seed)
-		df.reset_index(drop = True, inplace=True)
-		# print the shuffled dataframe to easily find problematic structures if any
-		df.to_csv(args.outdir + os.sep + "data_train.csv", index=True)
-		#print(df)
-		#print("Number of selected data = ",df.shape[0])
+	p=args.p/100
+	if p>1:
+		p=1.0
+
+	print("Shuffle data")
+	df = df.sample(frac = p, replace = False, random_state = seed)
+	df.reset_index(drop = True, inplace=True)
+	# print the shuffled dataframe to easily find problematic structures if any
+	df.to_csv(args.outdir + os.sep + "data_train.csv", index=True)
+	#print(df)
+	#print("Number of selected data = ",df.shape[0])
 
 	return df
 

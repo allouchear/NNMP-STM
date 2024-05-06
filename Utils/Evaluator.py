@@ -4,7 +4,9 @@ from Utils.DataContainer import *
 from Utils.DataProvider import *
 from STMModel.STMModel import *
 
-def getExampleData():
+
+def getExampleData(dtype):
+	dtype=tf.float64 if dtype=='float64' else tf.float32
 	data = {}
 	data['Z'] =  [1,1]
 	data['M'] = [1.0,1.0]
@@ -13,11 +15,11 @@ def getExampleData():
 	data['idx_j'] =  [1]
 	data['offsets'] = [0]
 	data['sys_idx'] = tf.zeros_like(data['Z'])
-	data['QaAlpha'] = tf.zeros_like(data['M'])
-	data['QaBeta'] = tf.zeros_like(data['M'])
-	data['dists']   = tf.zeros_like(data['M'])
-	data['emins']   = tf.zeros_like(data['M'])
-	data['emaxs']   = tf.zeros_like(data['M'])
+	data['QaAlpha'] = tf.zeros_like(data['M'],dtype=dtype)
+	data['QaBeta'] = tf.zeros_like(data['M'],dtype=dtype)
+	data['dists']   = tf.zeros_like(data['M'],dtype=dtype)
+	data['emins']   = tf.zeros_like(data['M'],dtype=dtype)
+	data['emaxs']   = tf.zeros_like(data['M'],dtype=dtype)
 	data['inputkeys']=["Z", 'dists', "emins", "emaxs", "M", "QaAlpha", "QaBeta"]
 	return data
 
@@ -115,7 +117,7 @@ class Evaluator:
 				print("*************************************************************************************************")
 
 
-			data = getExampleData()
+			data = getExampleData(args.dtype)
 			images, loss, gradients = stmModel(data,closs=False) # to set auto shape
 			#print("checkpoint=",checkpoint)
 			stmModel.load_weights(checkpoint)
@@ -187,8 +189,8 @@ class Evaluator:
 				#d['n'] =  tf.reshape(values[key],[-1]).shape[0]
 				d['n'] = datakey.shape[0]
 				if key=='images':
-					nx=data['image_nx'][0]
-					ny=data['image_ny'][0]
+					nx=data['image_nx']
+					ny=data['image_ny']
 					d['loss'] =  stm_loss(images, tf.constant(data[key],dtype=self.model.stmModel.dtype), nx, ny, loss_bypixel=self.loss_bypixel, loss_type=self.loss_type)
 					if self.loss_bypixel<=0 and len(images.shape)>1:
 						d['loss'] *=  len(images.shape) # because sums[key]=> sums[keys]['loss']/sums[keys]['n'] in computeAccuraciesFromSums
@@ -367,8 +369,8 @@ class Evaluator:
 		if len(images.shape)==1:
 			images=tf.reshape(images,[1,-1])
 		sis=stm_sis(data['images'],images)
-		nx=data['image_nx'][0]
-		ny=data['image_ny'][0]
+		nx=data['image_nx']
+		ny=data['image_ny']
 		ssim=stm_ssim_all(images, data['images'], nx,ny)
 		ms_ssim=stm_ms_ssim_all(images, data['images'], nx,ny)
 		df = pd.DataFrame({"SIS":sis.numpy(),"SSIM": ssim.numpy(), "MS_SSIM": ms_ssim.numpy(), "ID":data['sys_ID']})

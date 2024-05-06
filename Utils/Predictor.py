@@ -9,7 +9,9 @@ from Utils.PeriodicTable import *
 
 periodicTable=PeriodicTable()
 
-def getExampleData():
+
+def getExampleData(dtype):
+	dtype=tf.float64 if dtype=='float64' else tf.float32
 	data = {}
 	data['Z'] =  [1,1]
 	data['M'] = [1.0,1.0]
@@ -18,11 +20,11 @@ def getExampleData():
 	data['idx_j'] =  [1]
 	data['offsets'] = [0]
 	data['sys_idx'] = tf.zeros_like(data['Z'])
-	data['QaAlpha'] = tf.zeros_like(data['M'])
-	data['QaBeta'] = tf.zeros_like(data['M'])
-	data['dists']   = tf.zeros_like(data['M'])
-	data['emins']   = tf.zeros_like(data['M'])
-	data['emaxs']   = tf.zeros_like(data['M'])
+	data['QaAlpha'] = tf.zeros_like(data['M'],dtype=dtype)
+	data['QaBeta'] = tf.zeros_like(data['M'],dtype=dtype)
+	data['dists']   = tf.zeros_like(data['M'],dtype=dtype)
+	data['emins']   = tf.zeros_like(data['M'],dtype=dtype)
+	data['emaxs']   = tf.zeros_like(data['M'],dtype=dtype)
 	data['inputkeys']=["Z", 'dists', "emins", "emaxs", "M", "QaAlpha", "QaBeta"]
 	return data
 
@@ -172,7 +174,7 @@ class Predictor:
 				sys.exit(1)
 			
 
-			data = getExampleData()
+			data = getExampleData(args.dtype)
 			images, loss, gradients = stmModel(data,closs=False) # to set auto shape
 			#print("checkpoint=",checkpoint)
 			stmModel.load_weights(checkpoint)

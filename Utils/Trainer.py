@@ -200,8 +200,8 @@ class Trainer:
 				#d['n'] =  tf.reshape(values[key],[-1]).shape[0]
 				d['n'] = datakey.shape[0]
 				if key=='images':
-					nx=data['image_nx'][0]
-					ny=data['image_ny'][0]
+					nx=data['image_nx']
+					ny=data['image_ny']
 					d['loss'] =  stm_loss(images, tf.constant(data[key],dtype=self.model.stmModel.dtype), nx, ny, loss_bypixel=self.loss_bypixel, loss_type=self.loss_type)
 					if self.loss_bypixel<=0 and len(images.shape)>1:
 						d['loss'] *=  len(images.shape) # because sums[key]=> sums[keys]['loss']/sums[keys]['n'] in computeAccuraciesFromSums
@@ -446,8 +446,8 @@ class Trainer:
 		if len(images.shape)==1:
 			images=tf.reshape(images,[1,-1])
 		sis=stm_sis(data['images'],images)
-		nx=data['image_nx'][0]
-		ny=data['image_ny'][0]
+		nx=data['image_nx']
+		ny=data['image_ny']
 		ssim=stm_ssim_all(images, data['images'], nx,ny)
 		ms_ssim=stm_ms_ssim_all(images, data['images'], nx,ny)
 		df = pd.DataFrame({"SIS":sis.numpy(),"SSIM": ssim.numpy(), "MS_SSIM": ms_ssim.numpy(), "ID":data['sys_ID']})
