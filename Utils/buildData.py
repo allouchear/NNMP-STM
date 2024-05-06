@@ -83,10 +83,6 @@ def getData(args):
 	print("Shuffle data")
 	df = df.sample(frac = p, replace = False, random_state = seed)
 	df.reset_index(drop = True, inplace=True)
-	# print the shuffled dataframe to easily find problematic structures if any
-	df.to_csv(args.outdir + os.sep + "data_train.csv", index=True)
-	#print(df)
-	#print("Number of selected data = ",df.shape[0])
 
 	return df
 
@@ -265,9 +261,9 @@ def buildAllData(directory, df, conv_distance, conv_mass, cutoff, njobs=1, prefi
 	return fnames
 
 
-def getdirname(args ) :
-def # print the shuffled dataframe to easily find problematic structures if any
-def directory=args.outdir
+def getdirname(args):
+	directory=args.outdir
+	print(directory)
 	if not os.path.exists(directory):
 		os.makedirs(directory)
 	return directory
