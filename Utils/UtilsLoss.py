@@ -216,16 +216,24 @@ def stm_loss_ms_ssim_all(model_stm ,target_stm, nx, ny):
 			ms_ssim = ms_ssimi
 		else:
 			ms_ssim += ms_ssimi
-	#print("ms_ssim=",ms_ssim/n)
 	return 1.0-ms_ssim/n
 
-def stm_loss_ms_ssim_mean(model_stm ,target_stm, nx, ny,alpha=0.84):
-	loss_ms_ssim = stm_loss_ms_ssim_all(model_stm ,target_stm, nx, ny)
+def stm_loss_get_mean(model_stm ,target_stm):
 	nan_mask=tf.math.logical_or(tf.math.is_nan(target_stm) , tf.math.is_nan(model_stm))
 	model_stm = tf.where(nan_mask, 0.0, model_stm)
 	target_stm = tf.where(nan_mask, 0.0, target_stm)
 	loss_mae = stm_mae_loss(model_stm ,target_stm)
 	loss_mae = tf.where(nan_mask, 0.0, loss_mae)
-	loss_mae = tf.reduce_mean(loss_mae,axis=1) # by pixels
+	loss_mae = tf.reduce_mean(loss_mae)
+	return loss_mae
+
+def stm_loss_ms_ssim_mean(model_stm ,target_stm, nx, ny,alpha=0.84):
+	loss_mae = stm_loss_get_mean(model_stm ,target_stm)
+	if  loss_mae<0.5:
+		loss_ms_ssim = stm_loss_ms_ssim_all(model_stm ,target_stm, nx, ny)
+	else:
+		loss_ms_ssim = stm_loss_ssim_all(model_stm ,target_stm, nx, ny)
+	print("loss ssim = ",loss_ms_ssim.numpy())
+	print("loss mae  = ",loss_mae.numpy())
 	loss =  alpha*loss_ms_ssim+(1.0-alpha)*loss_mae
 	return loss
