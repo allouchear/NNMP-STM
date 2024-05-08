@@ -33,7 +33,9 @@ def stm_ms_ssim (model_stm ,target_stm, nx, ny):
 	model_stm_image = (model_stm_image-minm)/(maxm-minm)
 	# Return A tensor containing an MS-SSIM value for each image in batch. The values are in range [0, 1]. 
       # Returns a tensor with shape: broadcast(img1.shape[:-3], img2.shape[:-3]). 
-	ssim_ms = tf.image.ssim_multiscale(model_stm_image, target_stm_image, max_val=max_val, filter_size=11, filter_sigma=1.5, k1=0.01, k2=0.03)
+	#ssim_ms = tf.image.ssim_multiscale(model_stm_image, target_stm_image, max_val=max_val, filter_size=11, filter_sigma=1.5, k1=0.01, k2=0.03)
+	ssim_ms = tf.image.ssim_multiscale(model_stm_image, target_stm_image, max_val=max_val, power_factors=(0.0448, 0.2856,0.1333),
+	filter_size=11, filter_sigma=1.5, k1=0.01, k2=0.03)
 
 	return ssim_ms
 
