@@ -60,7 +60,7 @@ def stm_rmse_loss(model_stm ,target_stm):
 	loss = (model_stm-target_stm)*(model_stm-target_stm)
 	return loss
 
-def stm_loss(model_stm ,target_stm, nx, ny, threshold=THRFREQ, loss_bypixel=0, loss_type='SID',alpha=0.85):
+def stm_loss(model_stm ,target_stm, nx, ny, threshold=THRFREQ, loss_bypixel=0, loss_type='SID',alpha=0.84):
 	if len( model_stm.shape)==1:
 		 model_stm = tf.reshape(model_stm,[1,-1])
 		 target_stm = tf.reshape(target_stm,[1,-1])
@@ -219,7 +219,7 @@ def stm_loss_ms_ssim_all(model_stm ,target_stm, nx, ny):
 	#print("ms_ssim=",ms_ssim/n)
 	return 1.0-ms_ssim/n
 
-def stm_loss_ms_ssim_mean(model_stm ,target_stm, nx, ny,alpha=0.85):
+def stm_loss_ms_ssim_mean(model_stm ,target_stm, nx, ny,alpha=0.84):
 	loss_ms_ssim = stm_loss_ms_ssim_all(model_stm ,target_stm, nx, ny)
 	nan_mask=tf.math.logical_or(tf.math.is_nan(target_stm) , tf.math.is_nan(model_stm))
 	model_stm = tf.where(nan_mask, 0.0, model_stm)
