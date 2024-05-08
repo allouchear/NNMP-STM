@@ -229,7 +229,7 @@ def stm_loss_get_mean(model_stm ,target_stm):
 
 def stm_loss_ms_ssim_mean(model_stm ,target_stm, nx, ny,alpha=0.84):
 	loss_mae = stm_loss_get_mean(model_stm ,target_stm)
-	if  loss_mae<0.5:
+	if  loss_mae<1000.0:
 		loss_ms_ssim = stm_loss_ms_ssim_all(model_stm ,target_stm, nx, ny)
 	else:
 		loss_ms_ssim = stm_loss_ssim_all(model_stm ,target_stm, nx, ny)
