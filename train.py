@@ -137,7 +137,7 @@ for istep in range(nsteps):
 			trainer.restore_variable_backups()
 
 	if (istep+1)%args.save_interval==0:
-		print("Saveing images .....",flush=True)
+		print("Saving images .....",flush=True)
 		dirname=trainer.saveImages(metrics_dir,dataType=1,uid=(istep+1))
 		if trainer.dataProvider.ntrain<=nmaxtr:
 			trainer.saveImages(metrics_dir,dataType=0,uid=(istep+1)) 
@@ -145,7 +145,7 @@ for istep in range(nsteps):
 			trainer.saveImages(metrics_dir,dataType=2,uid=(istep+1)) 
 
 	if (istep+1)%args.summary_interval==0:
-		print("Saveing logs .....",flush=True)
+		print("Saving logs .....",flush=True)
 		acc=add_validation_metrics_to_files(trainer, validation_metrics_files, istep==0)
 		add_metrics_to_logs(writer_logs_validation, acc, istep, prefix=None)
 
