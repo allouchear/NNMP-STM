@@ -79,12 +79,10 @@ if args.load_average>0:
 	logging.info("Trying to load of average check point")
 	print("Trying to load of average check point")
 	ok=trainer.load_weights(fname=average_checkpoint)
-	print("ok average=",ok)
 else:
 	logging.info("Trying to load of best check point")
 	print("Trying to load of best check point")
 	ok=trainer.load_weights(fname=best_checkpoint)
-	print("ok best=",ok)
 
 
 
