@@ -246,15 +246,16 @@ def stm_loss_get_mean(model_stm ,target_stm):
 
 # https://arxiv.org/pdf/1511.08861, default alpha=0.84
 def stm_loss_ms_ssim_mean(model_stm ,target_stm, nx, ny,alpha=0.84,minmae=1000.0, power_factors=(0.0448, 0.2856, 0.3001, 0.2363, 0.1333)):
+	print("alpha             = ",alpha)
+	print("min mae to use ms = ",minmae)
 	loss_mae = stm_loss_get_mean(model_stm ,target_stm)
 	if  loss_mae<minmae:
 		print("power_factors     = ",power_factors)
 		loss_ms_ssim = stm_loss_ms_ssim_all(model_stm ,target_stm, nx, ny,power_factors=power_factors)
+		print("loss ms ssim      = ",loss_ms_ssim.numpy())
 	else:
 		loss_ms_ssim = stm_loss_ssim_all(model_stm ,target_stm, nx, ny)
-	print("alpha             = ",alpha)
-	print("min mae to use ms = ",minmae)
-	print("loss ms ssim      = ",loss_ms_ssim.numpy())
+		print("loss ssim         = ",loss_ms_ssim.numpy())
 	print("loss mae          = ",loss_mae.numpy())
 	loss =  alpha*loss_ms_ssim+(1.0-alpha)*loss_mae
 	return loss
