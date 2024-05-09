@@ -153,6 +153,7 @@ class Trainer:
 			#print(dt)
 			print_gradients_norms(gradients,self.model.trainable_weights,details=False)
 			#print("==========================================================")
+		gradients = [(tf.where(tf.math.is_nan(grad), tf.zeros_like(grad), grad)) for grad in gradients]
 		self.optimizer.apply_gradients(zip(gradients, self.model.trainable_weights))
 		self.update_learning_rate(loss)
 			
