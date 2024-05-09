@@ -56,6 +56,8 @@ def smooth_abs(x):
 	#return  0.66666666666666666*tf.math.log(1.0+tf.math.exp(3.0*x))-x-0.66666666666666666*tf.math.log(tf.constant(2,dtype=x.dtype))
 	k=tf.constant(3,dtype=x.dtype)
 	return  2/k*tf.math.log(1+tf.math.exp(k*x))-x-2/k*0.69314718055994528623
+def exp(x): 
+	return  tf.math.exp(x)
 
 #is nn softplus scaled shifted
 def zero_one_softplus(x):
@@ -69,6 +71,8 @@ def activation_deserialize(name):
 		return None
 	elif name=="zero_one_softplus":
 		return zero_one_softplus
+	elif name=="exp":
+		return exp
 	elif name=="softplus":
 		return softplus
 	elif name=="nnsoftplus":

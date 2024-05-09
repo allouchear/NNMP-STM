@@ -224,7 +224,7 @@ def setOutputLocationFiles(args):
 	if not os.path.exists(best_dir):
 		os.makedirs(best_dir)
 	average_dir = os.path.join(directory, 'average')
-	if not os.path.exists(best_dir):
+	if not os.path.exists(average_dir):
 		os.makedirs(average_dir)
 	log_dir = os.path.join(directory, 'logs')
 	if not os.path.exists(log_dir):

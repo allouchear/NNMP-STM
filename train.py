@@ -130,8 +130,14 @@ for istep in range(nsteps):
 	#if istep%args.validation_interval==1000:
 	if (istep+1)%args.validation_interval==0:
 		lossbest=validation_test(trainer, lossbest, best_checkpoint, best_loss_file, istep)
+		if trainer.use_average==1:
+			trainer.save_variable_backups()
+			trainer.set_average_vars()
+			trainer.save_weights(fname=average_checkpoint)
+			trainer.restore_variable_backups()
 
 	if (istep+1)%args.save_interval==0:
+		print("Saveing images .....",flush=True)
 		dirname=trainer.saveImages(metrics_dir,dataType=1,uid=(istep+1))
 		if trainer.dataProvider.ntrain<=nmaxtr:
 			trainer.saveImages(metrics_dir,dataType=0,uid=(istep+1)) 
@@ -139,6 +145,7 @@ for istep in range(nsteps):
 			trainer.saveImages(metrics_dir,dataType=2,uid=(istep+1)) 
 
 	if (istep+1)%args.summary_interval==0:
+		print("Saveing logs .....",flush=True)
 		acc=add_validation_metrics_to_files(trainer, validation_metrics_files, istep==0)
 		add_metrics_to_logs(writer_logs_validation, acc, istep, prefix=None)
 
