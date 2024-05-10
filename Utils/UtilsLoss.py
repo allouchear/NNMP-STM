@@ -9,12 +9,14 @@ THRFREQ=1e-3
 def stm_ssim(model_stm ,target_stm, nx, ny):
 	model_stm_image  = tf.reshape(model_stm,[model_stm.shape[0],nx,ny,1])
 	target_stm_image = tf.reshape(target_stm, [target_stm.shape[0],nx,ny,1])
-	max_val = 1.0
 	minm=tf.reduce_min(model_stm_image)
 	maxm=tf.reduce_max(model_stm_image)
-	model_stm_image -= minm
-	if maxm>minm:
-		model_stm_image /= maxm-minm
+	if  maxm-minm>1:
+		model_stm_image -= minm
+		if maxm>minm:
+			model_stm_image /= maxm-minm
+	max_val=1.0
+	#print("min/max=",minm,maxm)
 	# A tensor containing an SSIM value for each image in batch or a tensor containing an SSIM value for each pixel for each image in batch 
 	# if return_index_map is True. Returned SSIM values are in range (-1, 1], when pixel values are non-negative. 
 	# Returns a tensor with shape: broadcast(img1.shape[:-3], img2.shape[:-3]) or broadcast(img1.shape[:-1], img2.shape[:-1]). 
@@ -29,12 +31,14 @@ def stm_ssim_loss(model_stm ,target_stm, nx, ny):
 def stm_ms_ssim (model_stm ,target_stm, nx, ny,power_factors=(0.0448, 0.2856, 0.3001, 0.2363, 0.1333)):
 	model_stm_image  = tf.reshape(model_stm,[model_stm.shape[0],nx,ny,1])
 	target_stm_image = tf.reshape(target_stm, [target_stm.shape[0],nx,ny,1])
-	max_val = 1.0
 	minm=tf.reduce_min(model_stm_image)
 	maxm=tf.reduce_max(model_stm_image)
-	model_stm_image -= minm
-	if maxm>minm:
-		model_stm_image /= maxm-minm
+	if  maxm-minm>1:
+		model_stm_image -= minm
+		if maxm>minm:
+			model_stm_image /= maxm-minm
+	max_val=1.0
+	#print("min/max=",minm,maxm)
 	# Return A tensor containing an MS-SSIM value for each image in batch. The values are in range [0, 1]. 
       # Returns a tensor with shape: broadcast(img1.shape[:-3], img2.shape[:-3]). 
 	ssim_ms = tf.image.ssim_multiscale(model_stm_image, target_stm_image, max_val=max_val, power_factors=power_factors,
@@ -61,6 +65,7 @@ def stm_rmse_loss(model_stm ,target_stm):
 	return loss
 
 def stm_loss(model_stm ,target_stm, nx, ny, threshold=THRFREQ, loss_bypixel=0, loss_type='SID'):
+	#print("maxm in stm_loss=",tf.reduce_max(model_stm))
 	if len( model_stm.shape)==1:
 		 model_stm = tf.reshape(model_stm,[1,-1])
 		 target_stm = tf.reshape(target_stm,[1,-1])
