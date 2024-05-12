@@ -95,7 +95,7 @@ nstepsByEpoch = trainer.dataProvider.get_nsteps_batch()
 
 #********************* Training *************** 
 logging.info("Begin training")
-print("Begin training")
+print("Begin training",flush=True)
 sums=None
 
 #===================== create log dirs =============
@@ -109,7 +109,7 @@ nmaxte=100
 for istep in range(nsteps):
 	epoch=istep//nstepsByEpoch
 	print("Step : ", istep+1,"/",nsteps, "; Epoch = ", epoch+1)
-	print("------------------------------")
+	print("------------------------------",flush=True)
 	#dt=trainer.dataProvider.next_batch()
 	if args.verbose>=1:
 		print("Current learning rate = ",trainer.get_learning_rate())
@@ -125,7 +125,7 @@ for istep in range(nsteps):
 	#aloss=trainer.computeLossFromSums(sums)
 	#print("Step : ", istep+1,"/",nsteps, "; Epoch = ", epoch+1, " ; Loss=",  loss.numpy(), " ; Averaged Loss=", aloss) 
 	#print("Step : ", istep+1,"/",nsteps, "; Epoch = ", epoch+1, " ; Loss=",  loss.numpy())
-	print("Loss=",  loss.numpy())
+	print("Loss=",  loss.numpy(),flush=True)
 
 	#if istep%args.validation_interval==1000:
 	if (istep+1)%args.validation_interval==0:
