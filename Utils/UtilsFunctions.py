@@ -28,7 +28,8 @@ def deepsizeof(ob):
 def saveOneImage(image, fname):
 	minm=tf.reduce_min(image)
 	maxm=tf.reduce_max(image)
-	image = (image-minm)/(maxm-minm)
+	if maxm-minm>1.0:
+		image = (image-minm)/(maxm-minm)
 	image=tf.image.convert_image_dtype(image, dtype=tf.uint16)
 	image = tf.io.encode_png(image)
 	with open(fname, "wb") as f:
