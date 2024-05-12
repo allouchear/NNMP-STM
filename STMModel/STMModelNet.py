@@ -70,7 +70,8 @@ class STMModelNet(tf.keras.Model):
 	def computeProperties(self, data):
 		outputs, nhloss = self.neuralNetwork.atomic_properties(data)
 		images  = outputs
-		images = tf.squeeze(tf.math.segment_sum(images, data['sys_idx']))
+		images = tf.squeeze(tf.math.segment_mean(images, data['sys_idx']))
+		#images = tf.squeeze(tf.math.segment_sum(images, data['sys_idx']))
 
 		return images, nhloss
 
