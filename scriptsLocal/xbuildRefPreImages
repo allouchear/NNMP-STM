@@ -1,0 +1,21 @@
+#!/bin/bash
+
+awk 'BEGIN{
+i=1
+}
+{
+	if(i>=2)
+	{
+		#print($0)
+		n=split($0,arr,",");
+		ref=sprintf("ref_%d.png",arr[4])
+		pred=sprintf("pred_%d.png",arr[4])
+		refpred=sprintf("refpred_%d_SIS_%0.3f.png",arr[4],arr[3])
+		printf("echo convert %s %s %s\n",ref,pred,refpred)
+		printf("convert %s %s +append %s\n",ref,pred,refpred)
+	}
+	i+=1
+}' similarities.csv > xp
+chmod u+x xp
+cat xp
+#./xp
