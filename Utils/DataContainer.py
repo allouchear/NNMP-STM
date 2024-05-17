@@ -74,6 +74,7 @@ def readDataAllSystems(directory, idxs, njobs, prefix):
 				if len(d)>0:
 					datalist.extend(d)
 
+	#print("datalist=",datalist)
 	data = {}
 	if len(datalist)<1:
 		return data
@@ -95,9 +96,9 @@ def readDataAllSystems(directory, idxs, njobs, prefix):
 			else:
 				data[key] = dd
 		data['sys_idx'].extend([i] * data["N"][i])
-		data['dists'].extend([data['dist'][0]] * data["N"][i])
-		data['emins'].extend([data['emin'][0]] * data["N"][i])
-		data['emaxs'].extend([data['emax'][0]] * data["N"][i])
+		data['dists'].extend([data['dist'][i]] * data["N"][i])
+		data['emins'].extend([data['emin'][i]] * data["N"][i])
+		data['emaxs'].extend([data['emax'][i]] * data["N"][i])
 		#print("i=",i," idx=", "N=",data["N"][i])
 		Ntot += data["N"][i]
 
@@ -111,6 +112,8 @@ def readDataAllSystems(directory, idxs, njobs, prefix):
 	del data['emin']
 	del data['emax']
 	data['inputkeys']=["Z", 'dists', "emins", "emaxs", "M", "QaAlpha", "QaBeta"]
+	#print("DEBUG Data dists ",data['dists'])
+	#print("DEBUG Data emin ",data['emins'])
 	#print("DEBUG Data shape ",data['images'].shape)
 	#print("DEBUG Meme percent : ",  psutil.Process(os.getpid()).memory_percent())
 		
