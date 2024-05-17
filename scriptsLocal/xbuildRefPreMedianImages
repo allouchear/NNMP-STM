@@ -1,0 +1,27 @@
+#!/bin/bash
+
+awk 'BEGIN{
+i=1
+med=10
+}
+{
+	if(i>=2)
+	{
+		#print($0)
+		n=split($0,arr,",");
+		ref=sprintf("ref_%d.png",arr[4])
+		pred=sprintf("pred_%d.png",arr[4])
+		predfiltered=sprintf("pred_filtered_%d.png",arr[4])
+		printf("echo convert -median %d %s %s\n", med, pred, predfiltered)
+		printf("convert -median %d %s %s\n", med, pred, predfiltered)
+
+		refpredpref=sprintf("refpred_%d_SIS_%0.3f_SSIM_%0.3f_MS_SSIM_%0.3f",arr[4],arr[1],arr[2],arr[3])
+		refpred=sprintf("%s.png",refpredpref)
+		printf("echo convert +smush 5 -gravity center -background blue  %s %s %s +append %s\n",ref,pred,predfiltered,refpred)
+		printf("convert +smush 5 -gravity center -background blue  %s %s %s +append %s\n",ref,pred,predfiltered,refpred)
+	}
+	i+=1
+}' similarities.csv > xp
+chmod u+x xp
+#cat xp
+./xp

@@ -11,8 +11,8 @@ i=1
 		ref=sprintf("ref_%d.png",arr[4])
 		pred=sprintf("pred_%d.png",arr[4])
 		refpred=sprintf("refpred_%d_MS_SSIM_%0.3f.png",arr[4],arr[3])
-		printf("echo convert %s %s %s\n",ref,pred,refpred)
-		printf("convert %s %s +append %s\n",ref,pred,refpred)
+		printf("echo convert  +smush 5 -gravity center -background blue %s %s +append %s\n",ref,pred,refpred)
+		printf("convert  +smush 5 -gravity center -background blue %s %s +append %s\n",ref,pred,refpred)
 	}
 	i+=1
 }' similarities.csv > xp
