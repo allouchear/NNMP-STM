@@ -1,0 +1,71 @@
+#!/bin/bash
+
+sed 's/,/ /g' similarities.csv | awk 'BEGIN{
+	l=0
+	nv=5
+	for(i=0;i<nv;i++)
+	{
+		s[i]=0;
+		s2[i]=0;
+		n[i]=0;
+		min[i]=0;
+		max[i]=0;
+	}
+}{
+	if(l==0)
+	{
+		nv=NF-1
+		for(i=1;i<=3;i++)
+			title[i-1]=$i
+	}
+	else{
+		for(i=1;i<=nv;i++)
+		{
+			s[i-1]  +=$i;
+			s2[i-1] +=$i*$i;
+			n[i-1]  += 1;
+			if(l==1)
+			{
+				min[i-1]=$i;
+				max[i-1]=$i;
+			}
+			else
+			{
+				if(min[i-1]>$i) min[i-1]=$i;
+				if(max[i-1]<$i) max[i-1]=$i;
+			}
+		}
+	}
+	l+=1;
+}END{
+	for(i=1;i<=nv;i++)
+	{
+		mean[i-1]  =s[i-1]/n[i-1];
+		sigma[i-1]  =s2[i-1]/n[i-1]-mean[i-1]*mean[i-1];
+		if (sigma[i-1]>=0)
+			sigma[i-1]  =sqrt(sigma[i-1])
+		else
+			sigma[i-1]  =sqrt(-sigma[i-1])
+	}
+	printf("%10s"," ")
+	for(i=1;i<=nv;i++)
+		printf("%10s ",title[i-1])
+	printf("\n")
+	printf("%-10s","mean")
+	for(i=1;i<=nv;i++)
+		printf("%10.6f ",mean[i-1])
+	printf("\n")
+	printf("%-10s","sigma")
+	for(i=1;i<=nv;i++)
+		printf("%10.6f ",sigma[i-1])
+	printf("\n")
+	printf("%-10s","min")
+	for(i=1;i<=nv;i++)
+		printf("%10.6f ",min[i-1])
+	printf("\n")
+	printf("%-10s","max")
+	for(i=1;i<=nv;i++)
+		printf("%10.6f ",max[i-1])
+	printf("\n")
+	
+}'

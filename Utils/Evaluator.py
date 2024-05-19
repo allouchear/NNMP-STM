@@ -373,7 +373,9 @@ class Evaluator:
 		ny=data['image_ny']
 		ssim=stm_ssim_all(images, data['images'], nx,ny)
 		ms_ssim=stm_ms_ssim_all(images, data['images'], nx,ny)
-		df = pd.DataFrame({"SIS":sis.numpy(),"SSIM": ssim.numpy(), "MS_SSIM": ms_ssim.numpy(), "ID":data['sys_ID']})
+		mae=stm_mae_all(images, data['images'])
+		rmse=stm_rmse_all(images, data['images'])
+		df = pd.DataFrame({"SIS":sis.numpy(),"SSIM": ssim.numpy(), "MS_SSIM": ms_ssim.numpy(), "MAE":mae, "RMSE":rmse, "ID":data['sys_ID']})
 		self.saveImagesBatch(data, images, dirname)
 		return df
 

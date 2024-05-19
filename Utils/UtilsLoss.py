@@ -152,6 +152,26 @@ def stm_sis(model_stm ,target_stm,threshold=THRFREQ):
 	sis = 1.0/(1.0+loss)
 	return sis
 
+def stm_mae_all(model_stm ,target_stm):
+	nan_mask=tf.math.logical_or(tf.math.is_nan(target_stm) , tf.math.is_nan(model_stm))
+	model_stm = tf.where(nan_mask, 0.0, model_stm)
+	target_stm = tf.where(nan_mask, 0.0, target_stm)
+
+	mae = tf.abs(model_stm-target_stm)
+	mae = tf.reduce_mean(mae,axis=1) # by pixels
+	return mae
+
+def stm_rmse_all(model_stm ,target_stm):
+	nan_mask=tf.math.logical_or(tf.math.is_nan(target_stm) , tf.math.is_nan(model_stm))
+	model_stm = tf.where(nan_mask, 0.0, model_stm)
+	target_stm = tf.where(nan_mask, 0.0, target_stm)
+
+	rmse = (model_stm-target_stm)*(model_stm-target_stm)
+	rmse = tf.reduce_mean(rmse,axis=1) # by pixels
+	rmse=tf.math.sqrt(rmse)
+	return rmse
+
+
 def stm_ssim_all(model_stm ,target_stm, nx, ny):
 	if len(model_stm.shape)==1:
 		 model_stm = tf.reshape(model_stm,[1,-1])
