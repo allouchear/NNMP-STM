@@ -137,12 +137,17 @@ for istep in range(nsteps):
 			trainer.restore_variable_backups()
 
 	if (istep+1)%args.save_interval==0:
+		if trainer.use_average==1:
+			trainer.save_variable_backups()
+			trainer.set_average_vars()
 		print("Saving images .....",flush=True)
 		dirname=trainer.saveImages(metrics_dir,dataType=1,uid=(istep+1))
 		if trainer.dataProvider.ntrain<=nmaxtr:
 			trainer.saveImages(metrics_dir,dataType=0,uid=(istep+1)) 
 		if trainer.dataProvider.ntest<=nmaxte:
 			trainer.saveImages(metrics_dir,dataType=2,uid=(istep+1)) 
+		if trainer.use_average==1:
+			trainer.restore_variable_backups()
 
 	if (istep+1)%args.summary_interval==0:
 		print("Saving logs .....",flush=True)
