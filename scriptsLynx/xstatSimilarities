@@ -15,7 +15,7 @@ sed 's/,/ /g' similarities.csv | awk 'BEGIN{
 	if(l==0)
 	{
 		nv=NF-1
-		for(i=1;i<=3;i++)
+		for(i=1;i<=nv;i++)
 			title[i-1]=$i
 	}
 	else{

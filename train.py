@@ -220,11 +220,6 @@ print_all_acc(acc)
 print("Saving images .....",flush=True)
 dirname=trainer.saveImages(metrics_dir,dataType=2, uid='final_best')
 
-if args.verbose>=1:
-	print("Specific parameters of model",flush=True)
-	print("----------------------------")
-	stmModel.print_parameters()
-
 print("====================================================================================================",flush=True)
 logging.info("That'a all. Good bye")
 print("That'a all. Good bye")

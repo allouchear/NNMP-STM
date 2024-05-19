@@ -246,7 +246,7 @@ class Trainer:
 		acc = {}
 		mae = {}
 		ase = {}
-		rmse = {}
+		mse = {}
 		R2 = {}
 		rr = {}
 		lossV = {}
@@ -264,7 +264,7 @@ class Trainer:
 			ymean = m
 			ypredmean = sums[keys]['sPredict']/sums[keys]['n']
 			ase[keys] = ypredmean-ymean 
-			rmse[keys] = tf.math.sqrt(tf.math.abs(residual/sums[keys]['n']))
+			mse[keys] = (tf.math.abs(residual/sums[keys]['n']))
 
 			yvar =  sums[keys]['s2Data']-2*ymean*sums[keys]['sData']+sums[keys]['n']*ymean*ymean
 			ypredvar =  sums[keys]['s2Predict']-2*ypredmean*sums[keys]['sPredict']+sums[keys]['n']*ypredmean*ypredmean
@@ -288,11 +288,11 @@ class Trainer:
 				mae[key] *= self.num_pixels
 			for key in ase.keys():
 				ase[key] *= self.num_pixels
-			for key in rmse.keys():
-				rmse[key] *= self.num_pixels
+			for key in mse.keys():
+				mse[key] *= self.num_pixels
 		acc['mae'] = mae
 		acc['ase'] = ase
-		acc['rmse'] = rmse
+		acc['mse'] = mse
 		acc['R2'] = R2
 		acc['r2'] = rr
 		acc['Loss'] = lossDic
@@ -308,7 +308,6 @@ class Trainer:
 				#print(keys,":")
 				#[ print(keys,"[", key,"]=", acc[keys][key].numpy()) for key in acc[keys] ]
 				[ print("{:5s}[{:2s}] = {:20.10f}".format(keys,key,acc[keys][key].numpy())) for key in acc[keys] ]
-				#print("")
 		return acc
 
 	def computeLossFromSums(self, sums):

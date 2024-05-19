@@ -114,7 +114,7 @@ def add_metrics_to_file(f, acc, addTitle=False):
 		f.flush()
 
 def open_validation_metrics_files(directory,  args):
-	fnames = { 'mae':"mae.txt", 'ase':"ase.txt", 'rmse':"rmse.txt", 'R2':"R2.txt", 'r2':"r2.txt", 'Loss':"Loss.txt"}
+	fnames = { 'mae':"mae.txt", 'ase':"ase.txt", 'mse':"mse.txt", 'R2':"R2.txt", 'r2':"r2.txt", 'Loss':"Loss.txt"}
 	files = {}
 	filenames = {}
 	print("Opening validation metrics files")
@@ -141,7 +141,7 @@ def add_validation_metrics_to_files(trainer, metrics_files, addTitle=False):
 	return acc
 
 def open_train_metrics_files(directory,  args):
-	fnames = { 'mae':"mae_train.txt", 'ase':"ase_train.txt", 'rmse':"rmse_train.txt", 'R2':"R2_train.txt", 'r2':"r2_train.txt", 'Loss':"Loss_train.txt"}
+	fnames = { 'mae':"mae_train.txt", 'ase':"ase_train.txt", 'mse':"mse_train.txt", 'R2':"R2_train.txt", 'r2':"r2_train.txt", 'Loss':"Loss_train.txt"}
 	files = {}
 	filenames = {}
 	print("Opening train metrics files")
@@ -150,7 +150,7 @@ def open_train_metrics_files(directory,  args):
 	return files,filenames
 
 def open_test_metrics_files(directory,  args):
-	fnames = { 'mae':"mae_test.txt", 'ase':"ase_test.txt", 'rmse':"rmse_test.txt", 'R2':"R2_test.txt", 'r2':"r2_test.txt", 'Loss':"Loss_test.txt"}
+	fnames = { 'mae':"mae_test.txt", 'ase':"ase_test.txt", 'mse':"mse_test.txt", 'R2':"R2_test.txt", 'r2':"r2_test.txt", 'Loss':"Loss_test.txt"}
 	files = {}
 	filenames = {}
 	print("Opening test metrics files")
