@@ -176,6 +176,7 @@ print("==================")
 trainer.save_variable_backups()
 if trainer.use_average==1:
 	trainer.set_average_vars()
+
 print("Train data",flush=True)
 print("----------")
 acc=trainer.computeTrainAccuracies(verbose=False)
@@ -189,10 +190,14 @@ acc=trainer.computeValidationAccuracies(verbose=True)
 print_all_acc(acc)
 print("Saving images .....",flush=True)
 dirname=trainer.saveImages(metrics_dir,dataType=1, uid='final')
-print("Specific parameters of model",flush=True)
-print("----------------------------")
-stmModel.print_parameters()
-#trainer.save_averaged_weights(fname=average_checkpoint)
+
+print("Test data",flush=True)
+print("--------------")
+acc=trainer.computeTestAccuracies(verbose=False)
+print_all_acc(acc)
+print("Saving images .....",flush=True)
+dirname=trainer.saveImages(metrics_dir,dataType=2, uid='final_best')
+
 trainer.save_weights(fname=average_checkpoint)
 print("----------------------------------------------------------")
 
