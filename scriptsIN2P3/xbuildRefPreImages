@@ -8,9 +8,9 @@ i=1
 	{
 		#print($0)
 		n=split($0,arr,",");
-		ref=sprintf("ref_%d.png",arr[4])
-		pred=sprintf("pred_%d.png",arr[4])
-		refpred=sprintf("refpred_%d_MS_SSIM_%0.3f.png",arr[4],arr[3])
+		ref=sprintf("ref_%d.png",arr[n])
+		pred=sprintf("pred_%d.png",arr[n])
+		refpred=sprintf("refpred_%d_MS_SSIM_%0.3f.png",arr[n],arr[3])
 		printf("echo convert  +smush 5 -gravity center -background blue %s %s +append %s\n",ref,pred,refpred)
 		printf("convert  +smush 5 -gravity center -background blue %s %s +append %s\n",ref,pred,refpred)
 	}
