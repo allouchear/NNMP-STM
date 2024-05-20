@@ -196,7 +196,7 @@ print("--------------")
 acc=trainer.computeTestAccuracies(verbose=False)
 print_all_acc(acc)
 print("Saving images .....",flush=True)
-dirname=trainer.saveImages(metrics_dir,dataType=2, uid='final_best')
+dirname=trainer.saveImages(metrics_dir,dataType=2, uid='final')
 
 trainer.save_weights(fname=average_checkpoint)
 print("----------------------------------------------------------")
