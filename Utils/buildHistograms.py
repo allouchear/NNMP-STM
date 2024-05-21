@@ -44,7 +44,7 @@ f, axis = plt.subplots(nhists, 1, sharex=True, gridspec_kw = {'wspace':0, 'hspac
 
 #sns.displot(x=data, kde=True)
 #sns.histplot(x=data, kde=True, bins=nbins, color='b', kde_kws={'bw_method':'scott'})
-st=0.12
+st=0.20
 y0=0.95
 xlabel=0.02
 xval=0.35
@@ -52,7 +52,8 @@ fsize=11
 for i in range(nhists):
 	p = sns.histplot(x=data[i], kde=True, bins=nbins, color='b', kde_kws={'bw_method':0.15}, ax=axis[i])
 	#p.set(xlabel="Spectra Information Similarity", ylabel = "Frequencies",label=labels[i],yticks=[])
-	p.set(xlabel="Spectra Information Similarity", ylabel = None,label=labels[i],yticks=[])
+	#p.set(xlabel="Spectra Information Similarity", ylabel = None,label=labels[i],yticks=[])
+	p.set(xlabel=" ", ylabel = None,label=labels[i],yticks=[])
 	#print(p.set.__doc__)
 	mutxt = "$ {} = $ {:.2f}".format(r"\bar{x}",mu[i])
 	stdtxt = "$ {} = $ {:.2f}".format(r"\sigma", std[i])
