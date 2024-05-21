@@ -7,6 +7,7 @@ from .ElementalModesBlock import *
 from Utils.ActivationFunctions import *
 import psutil
 import os
+import sys
 
 def softplus_inverse(x):
 	'''numerically stable inverse of softplus transform'''
@@ -54,19 +55,20 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 		F,                               #dimensionality of feature vector
 		K,                               #number of radial basis functions
 		cutoff,                          #cutoff distance for short range interactions
-		num_hidden_nodes_em = None, 	 #number of hidden nodes by layer in element modes block , None => F
-		num_hidden_layers_em = 2, 	 #number of hidden layer in element modes block
+		depthtype=0, 			   # 0=> distance to surface, 1=> distances to atoms , 2=> 2 parameters : distance to plane and z of atoms")
+		num_hidden_nodes_em = None, 	   #number of hidden nodes by layer in element modes block , None => F
+		num_hidden_layers_em = 2, 	   #number of hidden layer in element modes block
 		num_blocks=5,                    #number of building blocks to be stacked
 		num_residual_atomic=2,           #number of residual layers for atomic refinements of feature vector
 		num_residual_interaction=3,      #number of residual layers for refinement of message vector
 		num_residual_output=1,           #number of residual layers for the output blocks
-		num_outputs=2001,      		 #number of outputs by atom
+		num_outputs=2001,      		   #number of outputs by atom
             drop_rate=None,                  #initial value for drop rate (None=No drop)
 		activation_fn=shifted_softplus,  #activation function
-		initializer_name="GlorotNormal",    # nitializer layer
+		initializer_name="GlorotNormal", # nitializer layer
 		output_activation_fn=tf.nn.relu, # output activation function
 		basis_type="Default",            #radial basis type : GaussianNet (Default), Gaussian, Bessel, Slater, 
-		beta=0.2,			 #for Gaussian basis type
+		beta=0.2,			         #for Gaussian basis type
 		dtype=tf.float32,                #single or double precision
 		seed=None):
 		super().__init__(dtype=dtype, name="ElementalModesMessagePassingNeuralNetwork")
@@ -81,6 +83,7 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 		self._F = F
 		self._K = K
 		self._cutoff = tf.constant(cutoff,dtype=dtype) #cutoff for neural network interactions
+		self._depthtype = depthtype
 		
 		self._activation_fn = activation_fn
 		self._initializer_name = initializer_name
@@ -124,16 +127,32 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 		Dij = tf.sqrt(tf.nn.relu(tf.reduce_sum((Ri-Rj)**2, -1))) #relu prevents negative numbers in sqrt
 		return Dij
 
-	def get_input_elements(self, data):
+	def get_input_elements(self, data,R):
+		dists = tf.Variable(data["dists"],dtype=self.dtype)
+		if self.depthtype==1:
+			zi = tf.Variable(R[:,2],dtype=self.dtype)
+			zmax = tf.reduce_max(zi)
+			dists = dists - zi + zmax
 
 		f = None
 		for key in data['inputkeys']:
-			v =tf.Variable(data[key],dtype=self.dtype)
+			if key=="dists":
+				v = dists
+			else:
+				v =tf.Variable(data[key],dtype=self.dtype)
 			v = tf.reshape(v,[v.shape[0],1])
 			if f is None:
 				f=v
 			else:
 				f=tf.concat([f,v],1)
+		if self.depthtype==2:
+			v = tf.Variable(R[:,2],dtype=self.dtype)
+			v = tf.reshape(v,[v.shape[0],1])
+			if f is None:
+				f=v
+			else:
+				f=tf.concat([f,v],1)
+
 		return f
 
 	#calculates the atomic properties and distances (needed if unscaled charges are wanted e.g. for loss function)
@@ -149,7 +168,7 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 		rbf = self.rbf_layer(Dij)
 		#print("rbf=\n",rbf,"\n-------------------------------------\n")
 
-		f = self.get_input_elements(data)
+		f = self.get_input_elements(data,R)
 		x = self.elemental_modes_block(f)
 		outputs = 0
 		nhloss = 0 #non-hierarchicality loss
@@ -205,6 +224,10 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 	@property
 	def cutoff(self):
 		return self._cutoff
+
+	@property
+	def depthtype(self):
+		return self._depthtype
 
 	@property
 	def activation_fn(self):

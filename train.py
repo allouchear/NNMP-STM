@@ -32,6 +32,7 @@ logging.info("Creation of NN model")
 stmModel=   STMModel (F=args.num_features,
 			K=args.num_basis,
 			cutoff=args.cutoff,
+			depthtype=args.depthtype,
 			dtype=tf.float64 if args.dtype=='float64' else tf.float32, 
 			num_hidden_nodes_em=args.num_hidden_nodes_em,
 			num_hidden_layers_em=args.num_hidden_layers_em,

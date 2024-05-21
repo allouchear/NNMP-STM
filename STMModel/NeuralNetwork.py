@@ -7,6 +7,7 @@ from Utils.ActivationFunctions import *
 def neuralNetwork(
 		F=128,                            # dimensionality of feature vector
 		K=64,                             # number of radial basis functions
+		depthtype=0, 			    # 0=> distance to surface, 1=> distances to atoms , 2=> 2 parameters : distance to plane and z of atoms")
 		cutoff=8.0,                       # cutoff distance for short range interactions (atomic unit)
 		num_hidden_nodes_em = None,       # number of nodes on each hidden layer in elemental modes block
 		num_hidden_layers_em = 2,         # number of hidden layers in elemental modes block
@@ -28,7 +29,7 @@ def neuralNetwork(
 
 	neuralNetwork = ElementalModesMessagePassingNeuralNetwork(
 	F,
-	K,cutoff, 
+	K,cutoff, depthtype=depthtype,
 	num_hidden_nodes_em=num_hidden_nodes_em,
 	num_hidden_layers_em=num_hidden_layers_em,
 	num_blocks=num_blocks, num_residual_atomic=num_residual_atomic, 

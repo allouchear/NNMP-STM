@@ -1,4 +1,4 @@
 #!/bin/bash
-source /home/allouche/MySoftwares/NNMP-STM-11-Code/env.sh
+source /home/allouche/MySoftwares/NNMP-STM-Code/NNMP-STM/env.sh
 tensorboard --logdir trainingDir/logs/
 

@@ -14,6 +14,7 @@ class STMModel(tf.keras.Model):
 	def __init__(self,
 		F=None,                           #dimensionality of feature vector
 		K=None,                           #number of radial basis functions
+		depthtype=0, 			    # 0=> distance to surface, 1=> distances to atoms , 2=> 2 parameters : distance to plane and z of atoms")
 		cutoff=None,                      #cutoff distance for short range interactions
 		num_hidden_nodes_em = None,       # number of nodes on each hidden layer in elemental modes block
 		num_hidden_layers_em = 2,         #  number of hidden layers in elemental modes block
@@ -42,6 +43,7 @@ class STMModel(tf.keras.Model):
 		self._stmModel=STMModelNet(
 						F=F,
 						K=K,
+						depthtype=depthtype,
 						num_hidden_nodes_em =  num_hidden_nodes_em,
 						num_hidden_layers_em = num_hidden_layers_em,
 						cutoff=cutoff,

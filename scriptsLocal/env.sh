@@ -20,7 +20,7 @@ CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file_
 export LD_LIBRARY_PATH=$CUDNN_PATH/lib:$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/python3.10/site-packages/tensorrt_libs
 
-export NNMP_STM_CODEDIR=/home/allouche/MySoftwares/NNMP-STM-11-Code
+export NNMP_STM_CODEDIR=/home/allouche/MySoftwares/NNMP-STM-Code/NNMP-STM
 export PYTHONPATH=$PYTHONPATH:$NNMP_STM_CODEDIR
 export PATH=$PATH:$NNMP_STM_CODEDIR
 export PATH=$PATH:$NNMP_STM_CODEDIR/scripts
