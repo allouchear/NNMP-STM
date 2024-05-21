@@ -4,7 +4,7 @@ sdir=${PWD%/*}
 #sourcedir=/sps/ilm/allouche/MySoftwares/NNMP-STM-10-Code
 sourcedir=$sdir
 
-listscripts=(xbuildData xevaluationEnsemble xpredict xtrain runTensorboard submitNNMP_CPU submitNNMP_GPU env.sh)
+listscripts=(xbuildData xbuildHistograms xevaluationEnsemble xpredict xtrain runTensorboard submitNNMP_CPU submitNNMP_GPU env.sh)
 
 for s in ${listscripts[@]}
 do
