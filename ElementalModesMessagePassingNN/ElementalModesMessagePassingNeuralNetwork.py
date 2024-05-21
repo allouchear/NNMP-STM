@@ -130,7 +130,7 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 	def get_input_elements(self, data,R):
 		dists = tf.Variable(data["dists"],dtype=self.dtype)
 		if self.depthtype==1:
-			zi = tf.Variable(R[:,2],dtype=self.dtype)
+			zi = R[:,2]
 			zmax = tf.reduce_max(zi)
 			dists = dists - zi + zmax
 
@@ -145,13 +145,25 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 				f=v
 			else:
 				f=tf.concat([f,v],1)
+
+		# add z as input data 
 		if self.depthtype==2:
-			v = tf.Variable(R[:,2],dtype=self.dtype)
+			v = R[:,2]
 			v = tf.reshape(v,[v.shape[0],1])
 			if f is None:
 				f=v
 			else:
 				f=tf.concat([f,v],1)
+
+		# add a,y,z as input data 
+		if self.depthtype==3:
+			for i in range(3):
+				v = R[:,i]
+				v = tf.reshape(v,[v.shape[0],1])
+				if f is None:
+					f=v
+				else:
+					f=tf.concat([f,v],1)
 
 		return f
 
