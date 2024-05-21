@@ -39,6 +39,8 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 			+"Initializer                                            : " + str(self.initializer_name)\
 			+"\n"\
 			+"Float type                                             : " + str(self.dtype)\
+			+"\n"\
+			+"Depth type                                             : " + str(self.depthtype)\
 
 		if self.activation_fn is None:
 			st = "\nActivation function                                     : None"
