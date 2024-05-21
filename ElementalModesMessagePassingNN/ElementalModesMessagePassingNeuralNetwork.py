@@ -55,7 +55,7 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 		F,                               #dimensionality of feature vector
 		K,                               #number of radial basis functions
 		cutoff,                          #cutoff distance for short range interactions
-		depthtype=0, 			   # 0=> distance to surface, 1=> distances to atoms , 2=> 2 parameters : distance to plane and z of atoms")
+		depthtype=2, 			   # 0=> distance to surface, 1=> distances to atoms , 2=> 2 parameters : distance to plane and z of atoms, 3=> 4 parameters : distance to plane and x,yz, z of atoms
 		num_hidden_nodes_em = None, 	   #number of hidden nodes by layer in element modes block , None => F
 		num_hidden_layers_em = 2, 	   #number of hidden layer in element modes block
 		num_blocks=5,                    #number of building blocks to be stacked
