@@ -26,21 +26,24 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 			+"\n"\
 			+"Number of hidden nodes by layer in element modes block : " + str(self.elemental_modes_block.hidden_layers[0].get_config()['units']) \
 			+"\n"\
+			+"Float type                                             : " + str(self.dtype)\
+			+"\n"\
+			+"Depth type                                             : " + str(self.depthtype)\
+			+"\n"\
 			+"Number of building blocks                              : " + str(self.num_blocks)\
-			+"\n"\
-			+"Number of residuals for interaction                    : " + str(len(self.interaction_block[0].interaction.residual_layer))\
-			+"\n"\
-			+"Number of residuals for atomic                         : " + str(len(self.interaction_block[0].residual_layer))\
 			+"\n"\
 			+"Number of outputs                                      : " + str(self.num_outputs)\
 			+"\n"\
 			+"Number of residuals for outputs                        : " + str(len(self.output_block[0].residual_layer))\
 			+"\n"\
 			+"Initializer                                            : " + str(self.initializer_name)\
+
+		if len(self.interaction_block)>0:
+			st +=\
+			 "\n"\
+			+"Number of residuals for interaction                    : " + str(len(self.interaction_block[0].interaction.residual_layer))\
 			+"\n"\
-			+"Float type                                             : " + str(self.dtype)\
-			+"\n"\
-			+"Depth type                                             : " + str(self.depthtype)\
+			+"Number of residuals for atomic                         : " + str(len(self.interaction_block[0].residual_layer))\
 
 		if self.activation_fn is None:
 			st = "\nActivation function                                     : None"
@@ -57,7 +60,7 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 		F,                               #dimensionality of feature vector
 		K,                               #number of radial basis functions
 		cutoff,                          #cutoff distance for short range interactions
-		depthtype=2, 			   # 0=> distance to surface, 1=> distances to atoms , 2=> 2 parameters : distance to plane and z of atoms, 3=> 4 parameters : distance to plane and x,yz, z of atoms
+		depthtype=0, 			   # 0=> distance to surface, 1=> distances to atoms , 2=> 2 parameters : distance to plane and z of atoms, 3=> 4 parameters : distance to plane and x,yz, z of atoms
 		num_hidden_nodes_em = None, 	   #number of hidden nodes by layer in element modes block , None => F
 		num_hidden_layers_em = 2, 	   #number of hidden layer in element modes block
 		num_blocks=5,                    #number of building blocks to be stacked
@@ -75,7 +78,7 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 		seed=None):
 		super().__init__(dtype=dtype, name="ElementalModesMessagePassingNeuralNetwork")
 
-		assert(num_blocks > 0)
+		#assert(num_blocks > 0)
 		assert(num_outputs > 0)
 		self._num_blocks = num_blocks
 		self._dtype = dtype
@@ -116,6 +119,11 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 			self.interaction_block.append(
 			InteractionBlock(F, num_residual_atomic, num_residual_interaction, initializer_name=initializer_name, activation_fn=activation_fn, name="InteractionBlock"+str(i),
 					seed=seed, drop_rate=self.drop_rate, dtype=dtype))
+			self.output_block.append(
+				OutputBlock(F, nouts, num_residual_output, initializer_name=initializer_name, activation_fn=activation_fn, name="OutputBlock"+str(i),
+					seed=seed, drop_rate=self.drop_rate, dtype=dtype))
+		if self.num_blocks<1:
+			i=0
 			self.output_block.append(
 				OutputBlock(F, nouts, num_residual_output, initializer_name=initializer_name, activation_fn=activation_fn, name="OutputBlock"+str(i),
 					seed=seed, drop_rate=self.drop_rate, dtype=dtype))
@@ -195,6 +203,9 @@ class ElementalModesMessagePassingNeuralNetwork(Layer):
 			if i > 0:
 				nhloss += tf.reduce_mean(out2/(out2 + lastout2 + 1e-7))
 			lastout2 = out2
+
+		if self.num_blocks<1:
+			outputs = out = self.output_block[0](x)
 
 		outputs=self.output_activation_fn(outputs)
 		return outputs, nhloss
