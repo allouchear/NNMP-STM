@@ -14,7 +14,7 @@ med=10
 		printf("echo convert -median %d %s %s\n", med, pred, predfiltered)
 		printf("convert -median %d %s %s\n", med, pred, predfiltered)
 
-		refpredpref=sprintf("refpred_%d_SIS_%0.3f_SSIM_%0.3f_MS_SSIM_%0.3f",arr[n],arr[1],arr[2],arr[3])
+		refpredpref=sprintf("refpredmedian_%d_SIS_%0.3f_SSIM_%0.3f_MS_SSIM_%0.3f",arr[n],arr[1],arr[2],arr[3])
 		refpred=sprintf("%s.png",refpredpref)
 		printf("echo convert +smush 5 -gravity center -background blue  %s %s %s +append %s\n",ref,pred,predfiltered,refpred)
 		printf("convert +smush 5 -gravity center -background blue  %s %s %s +append %s\n",ref,pred,predfiltered,refpred)
