@@ -1,5 +1,5 @@
---restart=/sto2/ssd/allouche/MySoftwares/NNMP-STM-12-Code/example/train_dir
---dataset=/sto2/ssd/allouche/MySoftwares/NNMP-STM-12-Code/example/Data/databaseNegative32
+--restart=train_dir
+--dataset=Data/databasePositive
 --num_train=8
 --num_valid=1
 --num_test=1
@@ -36,4 +36,4 @@
 --activation_function=shifted_softplus
 --output_activation_function=nnsoftplus
 --restart_optimizer_nsteps=200000
---num_jobs=-1
+--num_jobs=1

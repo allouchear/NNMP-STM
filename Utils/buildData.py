@@ -195,7 +195,8 @@ def buildOnSystem(directory, df,idx, conv_distance, conv_mass, cutoff, prefix="s
 	store["QaBeta"]=QaBeta
 	store["idx_i"]=idx_i
 	store["idx_j"]=idx_j
-	store["offsets"]=offsets
+	#store["offsets"]=offsets
+	store.create_dataset('offsets', data=offsets, chunks=offsets.shape, compression='gzip', compression_opts=9)
 	nr=num_pixels-image.shape[0]*image.shape[1]
 	if nr<0:
 		printf("********************************************")
@@ -206,7 +207,10 @@ def buildOnSystem(directory, df,idx, conv_distance, conv_mass, cutoff, prefix="s
 	#print("rest size = ",rest.shape)
 	image1D=tf.concat([tf.reshape(image,-1), rest],axis=-1)
 	#print("image 1D size = ",image1D.shape)
-	store["image"]= image1D
+	#store["image"]= image1D
+	#store.create_dataset('image', data=image1D, chunks=image1D.shape, compression='gzip', compression_opts=9)
+	store.create_dataset('image', data=image1D, compression='gzip', compression_opts=9)
+	#store["image"]= image1D
 	store["image_nx"]= [image.shape[0]]
 	store["image_ny"]= [image.shape[1]]
 	store["dist"]= [df["dist"][idx]]
