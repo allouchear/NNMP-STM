@@ -1,13 +1,15 @@
 #!/bin/bash
 
-source /sto2/ssd/allouche/MySoftwares/NNMP-STM-12-Code/env.sh
+source /home/allouche/MySoftwares/NNMP-STM-Code/NNMP-STM/env.sh
+
+export CUDA_VISIBLE_DEVICES='' # to force CPU use
 
 infile0="Data/data.csv"
 infile="Data/dataB.csv"
 grep -v INCAR $infile0 > $infile
 
-#outdir="Data/databaseNegative"
-#python $NNMP_STM_CODEDIR/Utils/buildData.py --infile=$infile  --outdir=$outdir --cutoff=10.0 --dtype=float64 --seed=100 --p=20 --njobs=8 --printimages=1 --num_pixels=100000 --negative_image=1
-
-outdir="Data/databasePositive"
-python $NNMP_STM_CODEDIR/Utils/buildData.py --infile=$infile  --outdir=$outdir --cutoff=10.0 --dtype=float64 --seed=100 --p=20 --njobs=8 --printimages=1 --num_pixels=100000 --negative_image=0
+outdir="Data/databasePositiveComp"
+#python $NNMP_STM_CODEDIR/Utils/buildData.py --infile=$infile  --outdir=$outdir --cutoff=10.0 --dtype=float64 --seed=100 --p=20 --njobs=8 --printimages=1 --num_pixels=100000 --negative_image=0 
+#python $NNMP_STM_CODEDIR/Utils/buildData.py --infile=$infile  --outdir=$outdir --cutoff=10.0 --dtype=float64 --seed=100 --p=20 --njobs=8 --printimages=1 --num_pixels=100000 --negative_image=0 --compression_opts=9
+python $NNMP_STM_CODEDIR/Utils/buildData.py --infile=$infile  --outdir=$outdir --cutoff=10.0 --dtype=float64 --seed=100 --p=20 --njobs=8 --printimages=1 --num_pixels=100000 --negative_image=0 --compression_opts=1
+#python $NNMP_STM_CODEDIR/Utils/buildData.py --infile=$infile  --outdir=$outdir --cutoff=10.0 --dtype=float64 --seed=100 --p=20 --njobs=8 --printimages=1 --num_pixels=100000 --negative_image=0 --compression_opts=0

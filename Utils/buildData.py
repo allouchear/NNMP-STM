@@ -31,6 +31,7 @@ def getArguments():
 	parser.add_argument("--num_pixels", type=int, default=1024*1024, help=" number of pixels (integer) :. Default 1048576 (1024*1024)")
 	parser.add_argument("--dtype", type=str, default="float32", help=" type of float : float32 or float64 :. Default float32")
 	parser.add_argument("--negative_image", type=int, default=0, help="Data in negative (>0) or not(<=0): Default 0=>no negative")
+	parser.add_argument("--compression_opts", type=int, default=9, help="Data gzipped with filter = [1-9]. Default = 9. <=0 => no compression")
 	args = parser.parse_args()
 	return args
 
@@ -179,7 +180,10 @@ def getOneImage(directory,idx,fname,cell,printimages=False,num_pixels=1024*1024,
 	#print(image.shape)
 	return image
 
-def buildOnSystem(directory, df,idx, conv_distance, conv_mass, cutoff, prefix="sys_", printimages=False, num_pixels=1024*1024, dtype='float32',negative=False):
+def buildOneSystem(directory, df,idx, conv_distance, conv_mass, cutoff, prefix="sys_", printimages=False, num_pixels=1024*1024, dtype='float32',negative=False, compression_opts=9):
+	opts = compression_opts
+	if compression_opts>9:
+		opts=9
 	fname=prefix+str(idx)+".h5"
 	outfile= os.path.join(directory, fname)
 	store = h5py.File(outfile,'w')
@@ -195,7 +199,10 @@ def buildOnSystem(directory, df,idx, conv_distance, conv_mass, cutoff, prefix="s
 	store["QaBeta"]=QaBeta
 	store["idx_i"]=idx_i
 	store["idx_j"]=idx_j
-	store["offsets"]=offsets
+	if opts<=0:
+		store["offsets"]=offsets
+	else:
+		store.create_dataset('offsets', data=offsets, chunks=offsets.shape, compression='gzip', compression_opts=opts)
 	nr=num_pixels-image.shape[0]*image.shape[1]
 	if nr<0:
 		printf("********************************************")
@@ -206,7 +213,10 @@ def buildOnSystem(directory, df,idx, conv_distance, conv_mass, cutoff, prefix="s
 	#print("rest size = ",rest.shape)
 	image1D=tf.concat([tf.reshape(image,-1), rest],axis=-1)
 	#print("image 1D size = ",image1D.shape)
-	store["image"]= image1D
+	if opts<=0:
+		store["image"]= image1D
+	else:
+		store.create_dataset('image', data=image1D, compression='gzip', compression_opts=opts)
 	store["image_nx"]= [image.shape[0]]
 	store["image_ny"]= [image.shape[1]]
 	store["dist"]= [df["dist"][idx]]
@@ -215,12 +225,12 @@ def buildOnSystem(directory, df,idx, conv_distance, conv_mass, cutoff, prefix="s
 	store.close()
 	return fname, image.shape
 
-def buildData(directory,df,conv_distance, conv_mass, cutoff,prefix="sys_", printimages=False,num_pixels=1024*1024, dtype='float32',negative=False):
+def buildData(directory,df,conv_distance, conv_mass, cutoff,prefix="sys_", printimages=False,num_pixels=1024*1024, dtype='float32',negative=False, compression_opts=9):
 	lidx=df.shape[0]
 	fnames=[]
 	i=1
 	for idx in df.index:
-		fname,shape = buildOnSystem(directory, df,idx, conv_distance, conv_mass, cutoff, prefix=prefix,printimages=printimages,num_pixels=num_pixels,dtype=dtype, negative=negative)
+		fname,shape = buildOneSystem(directory, df,idx, conv_distance, conv_mass, cutoff, prefix=prefix,printimages=printimages,num_pixels=num_pixels,dtype=dtype, negative=negative, compression_opts=compression_opts)
 		fnames.append(fname)
 		print('% : {:5.2f} ; {:5d}/{:5d} size = {}\r'.format((i)/lidx*100, i, lidx,shape),end='')
 		i += 1
@@ -245,16 +255,16 @@ def getNBNE(njobs, dfshape):
 	'''
 	return NB, NE
 
-def buildAllData(directory, df, conv_distance, conv_mass, cutoff, njobs=1, prefix="sys_",printimages=False,num_pixels=1024*1024, dtype='float32',negative=False):
+def buildAllData(directory, df, conv_distance, conv_mass, cutoff, njobs=1, prefix="sys_",printimages=False,num_pixels=1024*1024, dtype='float32',negative=False, compression_opts=9):
 	print("Data processing ... ")
 	print("Number of structures =",df.shape[0])
 	if njobs==1:
-		fnames = buildData(directory,df, conv_distance, conv_mass, cutoff, prefix=prefix,printimages=printimages,num_pixels=num_pixels,dtype=dtype, negative=negative)
+		fnames = buildData(directory,df, conv_distance, conv_mass, cutoff, prefix=prefix,printimages=printimages,num_pixels=num_pixels,dtype=dtype, negative=negative, compression_opts=compression_opts)
 		return fnames
 	else:
 		NB,NE = getNBNE(njobs, df.shape[0])
 		r = Parallel(n_jobs=njobs, verbose=20)(
-			delayed(buildData)(directory,df[NB[i]:NE[i]], conv_distance, conv_mass, cutoff, prefix=prefix,printimages=printimages,num_pixels=num_pixels,dtype=dtype,negative=negative) for i in range(njobs)
+			delayed(buildData)(directory,df[NB[i]:NE[i]], conv_distance, conv_mass, cutoff, prefix=prefix,printimages=printimages,num_pixels=num_pixels,dtype=dtype,negative=negative,  compression_opts=compression_opts) for i in range(njobs)
 		) 
 		fnames = [element for innerList in r for element in innerList]
 	#print(fnames)
@@ -394,7 +404,7 @@ outcsv= os.path.join(directory, 'out.csv')
 df.to_csv(outcsv)
 prefix="sys_"
 negative=negative=args.negative_image>0
-fnames =buildAllData(directory, df, args.conv_distance, args.conv_mass, args.cutoff, njobs=njobs, prefix=prefix,printimages=args.printimages,num_pixels=args.num_pixels,dtype=args.dtype, negative=negative)
+fnames =buildAllData(directory, df, args.conv_distance, args.conv_mass, args.cutoff, njobs=njobs, prefix=prefix,printimages=args.printimages,num_pixels=args.num_pixels,dtype=args.dtype, negative=negative, compression_opts=args.compression_opts)
 buildIndexFile(df, directory, fnames)
 buildParametersFile(directory, args.cutoff, args.num_pixels,prefix=prefix, negative=negative,dtype=args.dtype)
 
