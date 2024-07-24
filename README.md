@@ -35,7 +35,7 @@ See xbuildData script in example directory.
 see train.inp and ./xtrain bash script in example directory.
 
 ### evaluation.py
-**Test the models (one or anensemble of models) using a database**\
+**Test the models (one or an ensemble of models) using a database**\
 see  ./xevaluationEnsemble bash script in example directory.
 
 ### predict.py
