@@ -27,23 +27,20 @@ You can also download the .zip file of NNMP-STM : Click on Code and Download ZIP
 
 ## Main programs
 ### buildData.py. 
-	see xbuildData script : from csv& png of Pierre => database for the training program
+build data for training.
+see xbuildData script in example directory.
 
-### train.py : using the database created by buildData.py, make the training. See traing.inp & xtrain
-               ./xtrain to run in interactive. submitNNMP_CPU or submitNNMP_GPU(in2p3 only) to submit the job
-		type submitNNMP_CPU or submitNNMP_GPU without parameters to show all options
+### train.py 
+Using the database created by buildData.py, make the training. See traing.inp & xtrain
+see ./xtrain bash script in example directory.
 
-### evaluation.py : test the models (one or anensemble of models) using a database
-               ./xevaluation to run in interactive. submitNNMP_CPU or submitNNMP_GPU(in2p3 only) to submit the job
-### predict.py : predict the STM image using a POSCAR file
-               ./xpredict to run in interactive. submitNNMP_CPU or submitNNMP_GPU(in2p3 only) to submit the job
+### evaluation.py : 
+Test the models (one or anensemble of models) using a database
+see  ./xevaluationEnsemble bash script in example directory.
+### predict.py
+Predict the STM image using a POSCAR file
+see ./xpredict bash script in example directory.
 
-
-## Scripts (bash)
-xbuildData   => build data in interactive 
-xevaluationEnsemble => make an evalution.
-xpredict	=> make an prediction. 
-xtrain	=> make an train.
 
 ## Example
 see example directory
