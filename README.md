@@ -30,8 +30,8 @@ You can also download the .zip file of NNMP-STM : Click on Code and Download ZIP
 see xbuildData script in example directory.
 
 ### train.py
-**Using the database created by buildData.py, make the training. See traing.inp & xtrain**
-see ./xtrain bash script in example directory.
+**Using the database created by buildData.py, make the training**
+see train.inp and ./xtrain bash script in example directory.
 
 ### evaluation.py
 **Test the models (one or anensemble of models) using a database**
