@@ -19,7 +19,7 @@ pip3 install nvidia-tensorrt
 
 ## Installation
 
-Using git,  Type : 
+Using git, under a terminal, type : 
 ```console
 git clone https://github.com/allouchear/NNMP-STM.git
 ```
