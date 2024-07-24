@@ -26,19 +26,20 @@ git clone https://github.com/allouchear/NNMP-STM.git
 You can also download the .zip file of NNMP-STM : Click on Code and Download ZIP
 
 ## Main programs
-### buildData.py : Build data for training.
-see xbuildData script in example directory.
+### buildData.py
+**Build data for training.**\
+See xbuildData script in example directory.
 
 ### train.py
-**Using the database created by buildData.py, make the training**
+**Using the database created by buildData.py, make the training**\
 see train.inp and ./xtrain bash script in example directory.
 
 ### evaluation.py
-**Test the models (one or anensemble of models) using a database**
+**Test the models (one or anensemble of models) using a database**\
 see  ./xevaluationEnsemble bash script in example directory.
 
 ### predict.py
-**Predict the STM image using a POSCAR file**
+**Predict the STM image using a POSCAR file**\
 see ./xpredict bash script in example directory.
 
 
