@@ -9,7 +9,7 @@
  - tensorflow_addons, 
  - nvidia-tensorrt
 
-After installation of conda, and activation of your envoronnement,  Type : 
+After installation of conda, and activation of your environnement,  Type : 
 ```console
 pip install tensorflow==2.12.0
 pip install tensorflow_probability==0.19.0
